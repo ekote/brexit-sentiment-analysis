@@ -2,12 +2,9 @@ from watson_developer_cloud import ToneAnalyzerV3
 import json
 import pandas as pd
 
-with open('tone.conf') as myfile:
-    apikey = myfile.read()
-
 tone_analyzer = ToneAnalyzerV3(
-    version='2019-01-19',
-    iam_apikey=apikey,
+    version='2019-01-26',
+    iam_apikey='gUyh2OR0IBixeyvJWRfs_QjOdDGphIDi2ZhpbsmAg_aE',
     url='https://gateway-lon.watsonplatform.net/tone-analyzer/api'
 )
 tone_analyzer.set_default_headers({'x-watson-learning-opt-out': "true"})
@@ -38,11 +35,15 @@ def analyze_sentiment(text):
 
 df = pd.read_csv('merged.csv')
 df1 = pd.DataFrame(columns = ['debate', 'date', 'speech', 'name', 'party', 'sentiment', 'score'])
+df = df.iloc[20703:]
 for index, row in df.iterrows():
-    sentiment, score = analyze_sentiment(row['speech'])
-    if score!=0:
-        row = [row['debate_name'], row['debate_date'], row['speech'], row['name'], row['party'], sentiment, score]
-        df1.loc[len(df1)] = row
+    try:
+        sentiment, score = analyze_sentiment(row['speech'])
+        if score!=0:
+            row = [row['debate_name'], row['debate_date'], row['speech'], row['name'], row['party'], sentiment, score]
+            df1.loc[len(df1)] = row
+    except:
+        pass
 
 df1.to_csv('sentiment_new.csv')
 
